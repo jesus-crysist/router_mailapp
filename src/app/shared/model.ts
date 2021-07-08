@@ -1,14 +1,6 @@
-import 'rxjs/add/operator/scan';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/zip';
-import 'rxjs/add/operator/skip';
-
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {of} from "rxjs/observable/of";
-
+import {BehaviorSubject, Observable, of, Subject, zip} from "rxjs";
+import {first, map, scan, skip, tap} from "rxjs/operators";
 
 /**
  * Data
@@ -26,11 +18,17 @@ export type Message = {
 };
 
 export type AppState = {
-  conversations: Conversation[]; messages: Message[];
+  conversations: Conversation[];
+  messages: Message[];
 };
 
 export type Reply = {
-  type: 'reply'; conversationId: number; payload: {title: string; body: string;};
+  type: 'reply';
+  conversationId: number;
+  payload: {
+    title: string;
+    body: string;
+  };
   onSuccess: Function;
 };
 
@@ -103,38 +101,56 @@ export class Repo {
   }
 
   conversations(folder: string): Observable<Observable<Conversation[]>> {
-    return of(this.state.map(s => s.conversations.filter(c => c.folder === folder)));
+    return of(this.state.pipe(
+        map(s => s.conversations.filter(c => c.folder === folder)))
+    );
   }
 
   conversation(id: number): Observable<Conversation> {
-    return this.state.map(s => s.conversations.filter(c => c.id === id)[0]).first();
+    return this.state.pipe(
+        map(s => s.conversations.filter(c => c.id === id)[0]),
+        first()
+    );
   }
 
   messageTitles(conversationId: number): Observable<Observable<Message[]>> {
-    return of(this.state.map(s => s.messages.filter(m => m.conversationId === conversationId)));
+    return of(this.state.pipe(
+        map(s => s.messages.filter(m => m.conversationId === conversationId)))
+    );
   }
 
   message(id: number): Observable<Message> {
-    return this.state.map(s => s.messages.filter(m => m.id === id)[0]).first();
+    return this.state.pipe(
+        map(s => s.messages.filter(m => m.id === id)[0]),
+        first()
+    );
   }
 
   private setUpEffects(actions: Actions) {
-    this.state.skip(1).zip(actions).subscribe(p => p[1].onSuccess(p[0]));
+    this.state.pipe(
+        skip(1),
+        tap(() => console.log('actions', actions)),
+        // zip(actions)
+    ).subscribe(
+        // (p: { onSuccess: (_) => {} }[]) => p[1].onSuccess(p[0])
+    );
   }
 
   private nextMessageId(): number { return this.id++; }
 
   private stateFn(actions: Observable<Action>): Observable<AppState> {
-    const r = actions.scan((state, v) => {
-      if (v.type === 'reply') {
-        return {
-          conversations: state.conversations,
-          messages: this.reduceMessages(state.messages, v)
-        };
-      } else {
-        return state;
-      }
-    }, this.initState);
+    const r = actions.pipe(
+        scan((state, v) => {
+        if (v.type === 'reply') {
+          return {
+            conversations: state.conversations,
+            messages: this.reduceMessages(state.messages, v)
+          };
+        } else {
+          return state;
+        }
+      }, this.initState)
+    );
     return wrapIntoBehavior(this.initState, r);
   }
 
@@ -154,7 +170,7 @@ export class Repo {
   }
 }
 
-function wrapIntoBehavior(init, obs) {
+function wrapIntoBehavior(init: AppState, obs: Observable<any>) {
   const res = new BehaviorSubject(init);
   obs.subscribe(s => res.next(s));
   return res;
