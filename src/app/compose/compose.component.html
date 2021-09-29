@@ -1,3 +1,4 @@
+<h3>Write a new message:</h3>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div>
         Title: <input formControlName="title" [required]="true" />
@@ -9,4 +10,5 @@
         Body: <textarea formControlName="body"></textarea>
     </div>
     <button type="submit" [disabled]="form.invalid">Reply</button>
+    <button type="button" (click)="hidePopup()">Cancel</button>
 </form>

@@ -37,8 +37,8 @@ export class ComposeComponent {
     });
   }
 
-  private hidePopup() {
-    this.router.navigate(['/', {outlets: {popup: null}}]);
+  hidePopup() {
+    this.router.navigate([{outlets: {popup: null}}]);
   }
 
 }

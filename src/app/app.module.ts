@@ -13,6 +13,7 @@ import {ConversationComponent} from './conversations/conversation/conversation.c
 import {MessageListComponent} from './messages/message-list/message-list.component';
 import {MessageComponent} from './messages/message/message.component';
 import {CommonModule} from "@angular/common";
+import {MatSidenavModule} from "@angular/material/sidenav";
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import {CommonModule} from "@angular/common";
         BrowserModule,
         AppRoutingModule,
         ReactiveFormsModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        MatSidenavModule
     ],
     providers: [
         Repo,

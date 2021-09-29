@@ -9,11 +9,19 @@
   </div>
 
   <content>
-    <router-outlet></router-outlet>
+
+    <mat-drawer-container [className]="'full-height'">
+      <mat-drawer-content>
+        <router-outlet></router-outlet>
+      </mat-drawer-content>
+
+      <mat-drawer mode="side" position="end" opened>
+        <div class="bb-popup-container">
+          <router-outlet name="popup"></router-outlet>
+        </div>
+      </mat-drawer>
+    </mat-drawer-container>
   </content>
 
-  <div>
-    Popup:
-    <router-outlet name="popup"></router-outlet>
-  </div>
+
 </div>

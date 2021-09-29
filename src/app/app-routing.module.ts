@@ -5,6 +5,7 @@ import {ConversationListComponent} from "./conversations/conversation-list/conve
 import {ConversationComponent} from "./conversations/conversation/conversation.component";
 import {MessageListComponent} from "./messages/message-list/message-list.component";
 import {MessageComponent} from "./messages/message/message.component";
+import {CanNotGoService} from "./can-not-go.service";
 
 const routes = [
   {path: '', pathMatch: 'full', redirectTo: '/inbox'},
@@ -44,6 +45,6 @@ const routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {enableTracing: true})],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }
